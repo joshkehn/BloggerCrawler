@@ -26,13 +26,33 @@ public class SqlTest
 		System.out.println("Connected, attempting query.");
 		
 		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery( "select `id` from `users` where 1" );
+		ResultSet rs = st.executeQuery( "select "+
+			"count(`users`.`fav_color`) AS color_count,"+
+			"`users`.`fav_color`,"+
+			"`users`.`firstname`"+
+		" from "+ 
+			"`users` "+ 
+		" where "+
+			"`users`.`eye_color` = `users`.`fav_color` AND "+
+			"`users`.`firstname` = 'Joshua' "+
+		"group by "+
+			"`users`.`fav_color` "+
+		"order by "+
+			"`color_count`;" );
 		
 		if(rs.first())
 		{
 			System.out.println("Query successful, listing.");
-			rs.getRow();
-			java.net.URL u = rs.getURL("id");
+
+			do
+			{
+				System.out.print(rs.getString("color_count"));
+				System.out.print("\t");
+				System.out.print(rs.getString("fav_color"));
+				System.out.print("\t");
+				System.out.print(rs.getString("firstname"));
+				System.out.println();
+			}while(rs.next());
 		}
 		else
 		{
