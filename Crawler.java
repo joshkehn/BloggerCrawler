@@ -2,7 +2,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class BloggerCrawler {
+public class Crawler {
 	
 	public static ArrayList<String> getMarkup (String startingURL) throws IOException, MalformedURLException {
 		
