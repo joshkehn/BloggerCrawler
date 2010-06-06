@@ -2,13 +2,35 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class Crawler {
+public abstract class Crawler {
 	
-	public static ArrayList<String> getMarkup (String startingURL) throws IOException, MalformedURLException {
+	LinkedList<URL> URLQueue;
+	int processedURLs;
+	
+	//Currently an arraylist of string arraylists.
+	//Will be replaced with different data type later.
+	ArrayList<ArrayList<String>> data;
+	
+	public Crawler(URL startingURL) {
+		URLQueue.add(startingURL);
+		processedURLs = 0;
+	}
 		
-		URL start = new URL(startingURL);
-
-		InputStreamReader pageStream = new InputStreamReader(start.openStream());
+	public String getCurrentURL() {
+		return URLQueue.peek().toString();
+	}
+	
+	public int getProcessedURLs() {
+		return processedURLs;
+	}
+	
+	public ArrayList<ArrayList<String>> getData() {
+		return data;
+	}
+	
+	public ArrayList<String> getMarkup (URL pageURL) throws IOException {
+				
+		InputStreamReader pageStream = new InputStreamReader(pageURL.openStream());
 		
 		BufferedReader pageBuffer = new BufferedReader(pageStream);
 		
@@ -22,17 +44,25 @@ public class Crawler {
 		return pageMarkup;
 	}
 	
-	public static void main (String[] args) {
+	public void step() throws IOException {
+		//Get markup from front-of-queue URL
+		ArrayList<String> markup = getMarkup(URLQueue.poll());
 		
-		try {
-			ArrayList<String> markup = getMarkup("http://www.particleburst.com");
-			System.out.print(markup);
+		//Process the markup
+		data = process(markup);
+		processedURLs++;
+		
+		//Get new URLs and add them to the queue
+		LinkedList<URL> newURLS = new LinkedList<URL>();
+		
+		for (URL c:newURLS) {
+			URLQueue.add(c);
 		}
 		
-		catch (IOException e) {
-			System.out.println("Could not read from URL");
-		}
 	}
 	
+	public abstract ArrayList<ArrayList<String>> process(ArrayList<String> markup);
+	
+	public abstract ArrayList<URL> getNewURLs(ArrayList<String> markup);
 }
 	
